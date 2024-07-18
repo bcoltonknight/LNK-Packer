@@ -5,7 +5,7 @@ import argparse
 
 def init_args():
     parser = argparse.ArgumentParser(
-        prog='lnkUnpack',
+        prog='lnkPack.py',
         description='Payload generator for self unpacking LNK files',
         epilog='Be gay, do crime :)'
     )
